@@ -1,0 +1,698 @@
+/* ============================================================
+   MOVIE SENTIMENT ANALYZER
+   ============================================================ */
+
+
+/* ============================================================
+   GLOBAL
+   ============================================================ */
+
+html,
+body,
+[class*="css"] {
+    font-family: "Inter", "Segoe UI", sans-serif;
+}
+
+
+/* Keep Streamlit header visible so sidebar navigation works */
+
+#MainMenu {
+    visibility: hidden;
+}
+
+
+/* IMPORTANT:
+   Do NOT hide header.
+   Do NOT hide sidebar.
+   Do NOT use display:none on stSidebar.
+*/
+
+
+/* ============================================================
+   MAIN CONTENT
+   ============================================================ */
+
+.block-container {
+    padding-top: 2.5rem;
+    padding-bottom: 3rem;
+    max-width: 900px;
+}
+
+
+/* ============================================================
+   HERO
+   ============================================================ */
+
+.hero {
+    background: linear-gradient(
+        135deg,
+        #6C5CE7 0%,
+        #341F97 100%
+    );
+
+    border-radius: 20px;
+
+    padding: 2.8rem 2.2rem;
+
+    color: white;
+
+    margin-bottom: 1.8rem;
+
+    box-shadow:
+        0 10px 30px rgba(108, 92, 231, 0.25);
+}
+
+
+.hero h1 {
+    font-size: 2.3rem;
+
+    margin-bottom: 0.4rem;
+
+    font-weight: 800;
+}
+
+
+.hero p {
+    font-size: 1.05rem;
+
+    opacity: 0.92;
+
+    max-width: 700px;
+}
+
+
+/* ============================================================
+   CINEMATIC HERO
+   ============================================================ */
+
+.cinematic-hero {
+    position: relative;
+
+    min-height: 300px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    text-align: center;
+
+    margin-bottom: 2rem;
+
+    border-radius: 22px;
+
+    overflow: hidden;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(108, 92, 231, 0.94),
+            rgba(52, 31, 151, 0.94)
+        );
+}
+
+
+.hero-content {
+    position: relative;
+
+    z-index: 2;
+
+    max-width: 900px;
+
+    padding: 3rem 2rem;
+}
+
+
+.hero-eyebrow {
+    display: inline-block;
+
+    margin-bottom: 1rem;
+
+    padding: 0.45rem 1rem;
+
+    border-radius: 999px;
+
+    background: rgba(255, 255, 255, 0.14);
+
+    color: white;
+
+    font-size: 0.85rem;
+
+    font-weight: 700;
+
+    letter-spacing: 0.8px;
+}
+
+
+.cinematic-hero h1 {
+    margin: 0;
+
+    color: white;
+
+    font-size: clamp(2.5rem, 5vw, 4.4rem);
+
+    line-height: 1.05;
+
+    font-weight: 850;
+
+    letter-spacing: -2px;
+}
+
+
+.cinematic-hero h1 span {
+    color: #dcd8ff;
+}
+
+
+.cinematic-hero p {
+    max-width: 800px;
+
+    margin: 1.3rem auto 0;
+
+    color: rgba(255, 255, 255, 0.92);
+
+    font-size: 1.1rem;
+
+    line-height: 1.6;
+}
+
+
+/* ============================================================
+   ANALYZER HEADING
+   ============================================================ */
+
+.prediction-heading {
+    text-align: center;
+
+    margin: 2rem auto 1.2rem;
+
+    max-width: 800px;
+}
+
+
+.prediction-heading h2 {
+    margin: 0;
+
+    font-size: 2rem;
+
+    font-weight: 800;
+}
+
+
+.prediction-heading p {
+    margin-top: 0.5rem;
+
+    opacity: 0.7;
+
+    font-size: 1rem;
+}
+
+
+/* ============================================================
+   TEXT AREA
+   ============================================================ */
+
+[data-testid="stTextArea"] textarea {
+    border-radius: 14px !important;
+
+    min-height: 170px !important;
+
+    font-size: 1rem !important;
+
+    padding: 1rem !important;
+}
+
+
+/* ============================================================
+   CHARACTER COUNTER
+   ============================================================ */
+
+.character-counter {
+    text-align: right;
+
+    margin-top: -0.5rem;
+
+    margin-bottom: 0.7rem;
+
+    opacity: 0.55;
+
+    font-size: 0.8rem;
+}
+
+
+/* ============================================================
+   PRIMARY BUTTON
+   ============================================================ */
+
+.stButton > button[kind="primary"] {
+    border-radius: 12px !important;
+
+    min-height: 52px;
+
+    font-size: 1.05rem !important;
+
+    font-weight: 700 !important;
+
+    background: linear-gradient(
+        135deg,
+        #6C5CE7,
+        #5142c5
+    ) !important;
+
+    color: white !important;
+
+    border: none !important;
+
+    box-shadow:
+        0 8px 20px rgba(108, 92, 231, 0.25);
+}
+
+
+.stButton > button[kind="primary"]:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 12px 25px rgba(108, 92, 231, 0.35);
+}
+
+
+/* ============================================================
+   EXAMPLES
+   ============================================================ */
+
+.examples-title {
+    margin-top: 1.2rem;
+
+    margin-bottom: 0.6rem;
+
+    font-size: 1rem;
+
+    font-weight: 700;
+}
+
+
+.stButton > button:not([kind="primary"]) {
+    border-radius: 999px !important;
+
+    min-height: 42px;
+
+    font-weight: 600 !important;
+}
+
+
+/* ============================================================
+   SENTIMENT RESULT
+   ============================================================ */
+
+.sentiment-result {
+    display: flex;
+
+    align-items: center;
+
+    gap: 1.3rem;
+
+    margin: 1.5rem auto;
+
+    padding: 1.4rem 1.6rem;
+
+    border-radius: 18px;
+
+    max-width: 900px;
+}
+
+
+.positive-result {
+    background: rgba(46, 213, 115, 0.12);
+
+    border: 1px solid rgba(46, 213, 115, 0.3);
+}
+
+
+.negative-result {
+    background: rgba(255, 71, 87, 0.12);
+
+    border: 1px solid rgba(255, 71, 87, 0.3);
+}
+
+
+.sentiment-icon {
+    width: 65px;
+
+    height: 65px;
+
+    min-width: 65px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: rgba(255, 255, 255, 0.1);
+
+    font-size: 2.2rem;
+}
+
+
+.sentiment-label {
+    font-size: 1.7rem;
+
+    font-weight: 800;
+}
+
+
+.positive-result .sentiment-label {
+    color: #2ed573;
+}
+
+
+.negative-result .sentiment-label {
+    color: #ff4757;
+}
+
+
+.sentiment-confidence {
+    margin-top: 0.2rem;
+
+    font-size: 0.95rem;
+
+    opacity: 0.7;
+}
+
+
+.sentiment-review {
+    margin-top: 0.5rem;
+
+    font-size: 0.95rem;
+
+    font-style: italic;
+
+    opacity: 0.8;
+}
+
+
+/* ============================================================
+   CONFIDENCE
+   ============================================================ */
+
+.confidence-title {
+    margin: 0.8rem 0 0.4rem;
+
+    font-size: 0.9rem;
+
+    font-weight: 700;
+}
+
+
+/* ============================================================
+   FEATURE SECTION
+   ============================================================ */
+
+.features-section-title {
+    margin-top: 2.5rem;
+
+    margin-bottom: 1rem;
+
+    font-size: 1.2rem;
+
+    font-weight: 700;
+}
+
+
+/* ============================================================
+   FEATURE CARDS
+   ============================================================ */
+
+.feature-card {
+    background: var(
+        --secondary-background-color,
+        #181B24
+    );
+
+    border: 1px solid rgba(128, 128, 128, 0.18);
+
+    border-radius: 16px;
+
+    padding: 1.4rem 1.5rem;
+
+    height: 100%;
+
+    min-height: 190px;
+
+    box-sizing: border-box;
+
+    transition:
+        transform 0.15s ease,
+        border-color 0.15s ease;
+}
+
+
+.feature-card:hover {
+    transform: translateY(-3px);
+
+    border-color:
+        rgba(108, 92, 231, 0.5);
+}
+
+
+.feature-icon {
+    width: 48px;
+
+    height: 48px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: rgba(108, 92, 231, 0.12);
+
+    font-size: 1.5rem;
+
+    margin-bottom: 0.7rem;
+}
+
+
+.feature-card h3 {
+    margin-top: 0;
+
+    font-size: 1.05rem;
+
+    font-weight: 750;
+}
+
+
+.feature-card p {
+    font-size: 0.92rem;
+
+    opacity: 0.7;
+
+    line-height: 1.55;
+}
+
+
+/* ============================================================
+   OLD CARD SUPPORT
+   ============================================================ */
+
+.card {
+    background: var(
+        --secondary-background-color,
+        #181B24
+    );
+
+    border: 1px solid rgba(255, 255, 255, 0.06);
+
+    border-radius: 16px;
+
+    padding: 1.4rem 1.5rem;
+
+    height: 100%;
+
+    transition:
+        transform 0.15s ease,
+        border-color 0.15s ease;
+}
+
+
+.card:hover {
+    transform: translateY(-3px);
+
+    border-color:
+        rgba(108, 92, 231, 0.5);
+}
+
+
+.card h3 {
+    margin-top: 0;
+
+    font-size: 1.05rem;
+}
+
+
+.card p {
+    opacity: 0.7;
+
+    font-size: 0.92rem;
+}
+
+
+.card .icon {
+    font-size: 1.6rem;
+
+    margin-bottom: 0.4rem;
+
+    display: block;
+}
+
+
+/* ============================================================
+   BADGES
+   ============================================================ */
+
+.badge {
+    display: inline-block;
+
+    padding: 0.25rem 0.7rem;
+
+    border-radius: 999px;
+
+    font-size: 0.78rem;
+
+    font-weight: 600;
+
+    margin-right: 0.4rem;
+}
+
+
+.badge-purple {
+    background: rgba(108, 92, 231, 0.15);
+
+    color: #A29BFE;
+}
+
+
+.badge-green {
+    background: rgba(46, 213, 115, 0.15);
+
+    color: #2ed573;
+}
+
+
+.badge-red {
+    background: rgba(255, 71, 87, 0.15);
+
+    color: #ff4757;
+}
+
+
+/* ============================================================
+   SECTION TITLE
+   ============================================================ */
+
+.section-title {
+    font-size: 1.15rem;
+
+    font-weight: 700;
+
+    margin: 1.6rem 0 0.8rem 0;
+}
+
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+
+.footer-note {
+    text-align: center;
+
+    opacity: 0.45;
+
+    font-size: 0.8rem;
+
+    margin-top: 2.5rem;
+}
+
+
+/* ============================================================
+   STREAMLIT SIDEBAR
+   ============================================================ */
+
+/*
+   IMPORTANT:
+   The sidebar is intentionally NOT hidden.
+   Streamlit automatically uses it for:
+       Home
+       Analyze
+       Dashboard
+       About
+*/
+
+
+[data-testid="stSidebar"] {
+    display: block !important;
+}
+
+
+/* Keep sidebar attractive */
+
+[data-testid="stSidebar"] {
+    border-right: 1px solid rgba(128, 128, 128, 0.15);
+}
+
+
+/* Sidebar links */
+
+[data-testid="stSidebar"] a {
+    border-radius: 10px;
+
+    margin-bottom: 4px;
+}
+
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 900px) {
+
+    .block-container {
+        padding-left: 1rem;
+
+        padding-right: 1rem;
+    }
+
+    .cinematic-hero h1 {
+        font-size: 2.8rem;
+    }
+
+}
+
+
+@media (max-width: 600px) {
+
+    .cinematic-hero {
+        min-height: 260px;
+    }
+
+    .cinematic-hero h1 {
+        font-size: 2.2rem;
+    }
+
+    .cinematic-hero p {
+        font-size: 0.95rem;
+    }
+
+    .sentiment-result {
+        flex-direction: column;
+
+        text-align: center;
+    }
+
+}
